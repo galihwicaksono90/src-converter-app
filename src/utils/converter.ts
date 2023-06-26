@@ -23,19 +23,22 @@ export class Converter {
 	template: DictionaryMapProperties;
 	ws: Exceljs.Worksheet;
 	databank: Record<string, DataBank>;
+	filename: string;
 
 	private constructor(
 		wb: Exceljs.Workbook,
 		newwb: Exceljs.Workbook,
 		ws: Exceljs.Worksheet,
 		template: DictionaryMapProperties,
-		databank: Record<string, DataBank>
+		databank: Record<string, DataBank>,
+		filename: string
 	) {
 		this.template = template;
 		this.wb = wb;
 		this.ws = ws;
 		this.databank = databank;
 		this.newwb = newwb;
+		this.filename = filename;
 	}
 
 	public static build = async (
@@ -51,7 +54,7 @@ export class Converter {
 		const ws = wb.getWorksheet(template.sheetName);
 		const newwb = Converter.createWorkbook();
 
-		return new Converter(wb, newwb, ws, template, databank);
+		return new Converter(wb, newwb, ws, template, databank, file.name);
 	};
 
 	convert = async () => {
@@ -74,11 +77,31 @@ export class Converter {
 
 			if (!data) {
 				data = this.mapRow(row);
+			} else {
+				this.addCustomData(data, row);
 			}
+
+			data.sku_id = null;
+			data.availability = 1;
+			data.status = 'active';
 
 			newws.addRow(data);
 		});
 		await this.saveFile();
+	};
+
+	addCustomData = (data: any, row: Exceljs.Row) => {
+		const { mappings } = this.template;
+		data.packaging = mappings.packaging ? row.getCell(mappings.packaging).value : null;
+		data.packaging_amount = mappings.packaging_amount
+			? row.getCell(mappings.packaging_amount).value
+			: 1;
+		data.basic_harga_normal = mappings.basic_harga_normal
+			? row.getCell(mappings.basic_harga_normal).value
+			: 1;
+		data.basic_harga_diskon = mappings.basic_harga_diskon
+			? row.getCell(mappings.basic_harga_diskon).value
+			: 1;
 	};
 
 	saveFile = async () => {
@@ -88,7 +111,7 @@ export class Converter {
 		});
 		const link = document.createElement('a');
 		link.href = URL.createObjectURL(blob);
-		link.download = 'fName.xlsx';
+		link.download = `${this.filename.split('.')[0]}(converted).xlsx`;
 		link.click();
 		URL.revokeObjectURL(link.href);
 	};
@@ -119,29 +142,7 @@ export class Converter {
 	private static addHeader = (ws: Exceljs.Worksheet) => {
 		ws.columns = excelColumns;
 		ws.addRow(header);
-		const t = [
-			'A',
-			'B',
-			'C',
-			'D',
-			'E',
-			'F',
-			'G',
-			'H',
-			'I',
-			'J',
-			'K',
-			'L',
-			'M',
-			'N',
-			'O',
-			'P',
-			'Q',
-			'R',
-			'S',
-			'T',
-			'U'
-		] as const;
+		const t = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O'] as const;
 		const r = ['B', 'C', 'F', 'G', 'I', 'J', 'K', 'L', 'M'];
 
 		t.forEach((x) => {
@@ -174,7 +175,7 @@ export class Converter {
 			other_name: mappings.other_name ? row.getCell(mappings.other_name).value : null,
 			barcode: mappings.barcode ? row.getCell(mappings.barcode).value : null,
 			brand_id: mappings.brand_id ? row.getCell(mappings.brand_id).value : null,
-			brand_name: mappings.brand_name ? row.getCell(mappings.brand_name).value : null,
+			brand_name: mappings.brand_name ? row.getCell(mappings.brand_name).value : 'Others',
 			category_id: mappings.category_id ? row.getCell(mappings.category_id).value : null,
 			alias: mappings.alias ? row.getCell(mappings.alias).value : null,
 			availability: mappings.availability ? row.getCell(mappings.availability).value : null,
@@ -183,8 +184,8 @@ export class Converter {
 			packaging_amount: mappings.packaging_amount
 				? row.getCell(mappings.packaging_amount).value
 				: null,
-			basic_harga_normal: mappings.src_harga_normal
-				? row.getCell(mappings.src_harga_normal).value
+			basic_harga_normal: mappings.basic_harga_normal
+				? row.getCell(mappings.basic_harga_normal).value
 				: null,
 			basic_harga_diskon: mappings.basic_harga_diskon
 				? row.getCell(mappings.basic_harga_diskon).value

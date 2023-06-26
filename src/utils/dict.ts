@@ -138,7 +138,7 @@ export const header: Row = {
 	availability: '(WAJIB DIISI) \n in-stock(1) / out-of-stock(0)',
 	status: '(WAJIB DIISI) \n active / inactive',
 	packaging: '(WAJIB DIISI)',
-	packaging_amount: '(WAJIB DIISI) satuan dari packaging',
+	packaging_amount: '(WAJIB DIISI) \n satuan dari packaging',
 	basic_harga_normal: '(WAJIB DIISI) harga normal',
 	basic_harga_diskon: 'harga diskon',
 	basic_tanggal_kadaluarsa: 'tanggal kadaluarsa harga diskon. format: DD-MM-YYYY',
@@ -173,12 +173,17 @@ export const excelColumns: Partial<Exceljs.Column>[] = [
 	},
 	{
 		header: 'brand_id',
+		key: 'brand_id',
+		width: 36
+	},
+	{
+		header: 'brand_name',
 		key: 'brand_name',
 		width: 36
 	},
 	{
-		header: 'category',
-		key: 'category',
+		header: 'category_id',
+		key: 'category_id',
 		width: 36
 	},
 	{
@@ -219,41 +224,6 @@ export const excelColumns: Partial<Exceljs.Column>[] = [
 	{
 		header: 'basic_tanggal_kadaluarsa',
 		key: 'basic_tanggal_kadaluarsa',
-		width: 36
-	},
-	{
-		header: 'gold_harga_normal',
-		key: 'gold_harga_normal',
-		width: 36
-	},
-	{
-		header: 'gold_harga_diskon',
-		key: 'gold_harga_diskon',
-		width: 36
-	},
-	{
-		header: 'gold_tanggal_kadaluarsa',
-		key: 'gold_tanggal_kadaluarsa',
-		width: 36
-	},
-	{
-		header: 'src_harga_normal',
-		key: 'src_harga_normal',
-		width: 36
-	},
-	{
-		header: 'src_harga_diskon',
-		key: 'src_harga_diskon',
-		width: 36
-	},
-	{
-		header: 'src_tanggal_kadaluarsa',
-		key: 'src_tanggal_kadaluarsa',
-		width: 36
-	},
-	{
-		header: 'packaging_amount',
-		key: 'packaging_amount',
 		width: 36
 	}
 ];
