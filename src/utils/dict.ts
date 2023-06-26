@@ -1,0 +1,259 @@
+import Exceljs from 'exceljs';
+export const templateTypes = ['default'] as const;
+
+export type TemplateTypes = (typeof templateTypes)[number];
+
+export type Dictionary = Record<TemplateTypes, DictionaryMapProperties>;
+
+export type DictionaryMapProperties = {
+	startRow: number;
+	sheetName: string;
+	mappings: DictionaryRow;
+	// mappings: MapArray;
+};
+
+export interface Row {
+	sku_id?: any;
+	name: any;
+	other_name?: any;
+	barcode?: any;
+	brand_id?: any;
+	brand_name: any;
+	category_id: any;
+	alias?: any;
+	availability?: any;
+	status?: any;
+	packaging?: any;
+	packaging_amount: any;
+	basic_harga_normal: any;
+	basic_harga_diskon?: any;
+	basic_tanggal_kadaluarsa?: any;
+	gold_harga_normal?: any;
+	gold_harga_diskon?: any;
+	gold_tanggal_kadaluarsa?: any;
+	src_harga_normal?: any;
+	src_harga_diskon?: any;
+	src_tanggal_kadaluarsa?: any;
+}
+
+// export interface DictionaryRow {
+// 	sku_id?: string;
+// 	name?: string;
+// 	other_name?: string;
+// 	barcode?: string;
+// 	brand_id?: string;
+// 	brand_name?: string;
+// 	category_id?: string;
+// 	alias?: string;
+// 	availability?: string;
+// 	status?: string;
+// 	packaging?: string;
+// 	packaging_amount?: string;
+// 	basic_harga_normal?: string;
+// 	basic_harga_diskon?: string;
+// 	basic_tanggal_kadaluarsa?: string;
+// 	gold_harga_normal?: string;
+// 	gold_harga_diskon?: string;
+// 	gold_tanggal_kadaluarsa?: string;
+// 	src_harga_normal?: string;
+// 	src_harga_diskon?: string;
+// 	src_tanggal_kadaluarsa?: string;
+// }
+
+export type DictionaryRow = {
+	sku_id?: number;
+	name?: number;
+	other_name?: number;
+	barcode?: number;
+	brand_id?: number;
+	brand_name?: number;
+	category_id?: number;
+	alias?: number;
+	availability?: number;
+	status?: number;
+	packaging?: number;
+	packaging_amount?: number;
+	basic_harga_normal?: number;
+	basic_harga_diskon?: number;
+	basic_tanggal_kadaluarsa?: number;
+	gold_harga_normal?: number;
+	gold_harga_diskon?: number;
+	gold_tanggal_kadaluarsa?: number;
+	src_harga_normal?: number;
+	src_harga_diskon?: number;
+	src_tanggal_kadaluarsa?: number;
+};
+
+export const dict: Dictionary = {
+	default: {
+		startRow: 2,
+		sheetName: 'Sheet1',
+		// mappings: {
+		// 	sku_id: 'KODE_BARANG',
+		// 	name: 'NAMA',
+		// 	//other_name: '',
+		// 	barcode: 'KODE_BARCODE',
+		// 	// brand_id: 'e',
+		// 	//brand_name: 'f',
+		// 	category_id: 'KATEGORI',
+		// 	//alias: 'h',
+		// 	//availability: 'i',
+		// 	//status: 'j',
+		// 	packaging: 'SATUAN_1',
+		// 	packaging_amount: 'ISI',
+		// 	basic_harga_normal: 'HARGA_TOKO_1',
+		// 	basic_harga_diskon: 'HARGA_PARTAI_1'
+		// },
+		mappings: {
+			sku_id: 1,
+			name: 4,
+			//other_name: '',
+			barcode: 2,
+			brand_id: 3,
+			//brand_name: 'f',
+			category_id: 5,
+			//alias: 'h',
+			//availability: 'i',
+			//status: 'j',
+			packaging: 10,
+			packaging_amount: 9,
+			basic_harga_normal: 15,
+			basic_harga_diskon: 17
+		} as const
+	}
+};
+
+export const header: Row = {
+	sku_id: 'jika menambah baru sku id di kosongkan. Mohon untuk tidak mengubah data sku id',
+	name: '(WAJIB DIISI) panjang maksimal karakter adalah 191',
+	other_name:
+		'nama yang ditampilkan pada aplikasi toko dan nota belanja, panjang maksimal karakter adalah 191',
+	barcode: 'panjang maksimal karakter adalah 191',
+	brand_id:
+		'silahkan pilih dari sheet brand atau jika dikosongkan akan menggunakan kolom brand_name',
+	brand_name: '(WAJIB DIISI) \n panjang maksimal karakter adalah 191',
+	category_id: '(WAJIB DIISI) \n silahkan pilih dari sheet category',
+	alias:
+		'bisa menambahkan beberapa alias dengan menggunakan koma. panjang maksimal karakter adalah 1000',
+	availability: '(WAJIB DIISI) \n in-stock(1) / out-of-stock(0)',
+	status: '(WAJIB DIISI) \n active / inactive',
+	packaging: '(WAJIB DIISI)',
+	packaging_amount: '(WAJIB DIISI) satuan dari packaging',
+	basic_harga_normal: '(WAJIB DIISI) harga normal',
+	basic_harga_diskon: 'harga diskon',
+	basic_tanggal_kadaluarsa: 'tanggal kadaluarsa harga diskon. format: DD-MM-YYYY',
+	gold_harga_normal: 'harga normal',
+	gold_harga_diskon: 'harga diskon',
+	gold_tanggal_kadaluarsa: 'tanggal kadaluarsa harga diskon. format: DD-MM-YYYY',
+	src_harga_normal: 'harga normal',
+	src_harga_diskon: 'harga diskon',
+	src_tanggal_kadaluarsa: 'tanggal kadaluarsa harga diskon. format: DD-MM-YYYY'
+};
+
+export const excelColumns: Partial<Exceljs.Column>[] = [
+	{
+		header: 'sku_id',
+		key: 'sku_id',
+		width: 36
+	},
+	{
+		header: 'name',
+		key: 'name',
+		width: 36
+	},
+	{
+		header: 'other_name',
+		key: 'other_name',
+		width: 36
+	},
+	{
+		header: 'barcode',
+		key: 'barcode',
+		width: 36
+	},
+	{
+		header: 'brand_id',
+		key: 'brand_name',
+		width: 36
+	},
+	{
+		header: 'category',
+		key: 'category',
+		width: 36
+	},
+	{
+		header: 'alias',
+		key: 'alias',
+		width: 36
+	},
+	{
+		header: 'availability',
+		key: 'availability',
+		width: 36
+	},
+	{
+		header: 'status',
+		key: 'status',
+		width: 36
+	},
+	{
+		header: 'packaging',
+		key: 'packaging',
+		width: 36
+	},
+	{
+		header: 'packaging_amount',
+		key: 'packaging_amount',
+		width: 36
+	},
+	{
+		header: 'basic_harga_normal',
+		key: 'basic_harga_normal',
+		width: 36
+	},
+	{
+		header: 'basic_harga_diskon',
+		key: 'basic_harga_diskon',
+		width: 36
+	},
+	{
+		header: 'basic_tanggal_kadaluarsa',
+		key: 'basic_tanggal_kadaluarsa',
+		width: 36
+	},
+	{
+		header: 'gold_harga_normal',
+		key: 'gold_harga_normal',
+		width: 36
+	},
+	{
+		header: 'gold_harga_diskon',
+		key: 'gold_harga_diskon',
+		width: 36
+	},
+	{
+		header: 'gold_tanggal_kadaluarsa',
+		key: 'gold_tanggal_kadaluarsa',
+		width: 36
+	},
+	{
+		header: 'src_harga_normal',
+		key: 'src_harga_normal',
+		width: 36
+	},
+	{
+		header: 'src_harga_diskon',
+		key: 'src_harga_diskon',
+		width: 36
+	},
+	{
+		header: 'src_tanggal_kadaluarsa',
+		key: 'src_tanggal_kadaluarsa',
+		width: 36
+	},
+	{
+		header: 'packaging_amount',
+		key: 'packaging_amount',
+		width: 36
+	}
+];
