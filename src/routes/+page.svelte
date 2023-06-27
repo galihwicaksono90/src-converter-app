@@ -48,10 +48,6 @@
 </svelte:head>
 
 <section class="main">
-	{#if loading}
-		<h1>Loading....</h1>
-	{/if}
-
 	<Select options={[...templateTypes]} bind:value={templateName} title="Nama template" />
 
 	<input
@@ -61,13 +57,18 @@
 		bind:files
 		bind:this={inputRef}
 	/>
+	<button on:click={processFile} disabled={loading} class="submit-button">Convert</button>
+	{#if loading}
+		<h1>Loading....</h1>
+	{/if}
 </section>
-
-<button on:click={processFile}>Convert</button>
 
 <style>
 	.main {
 		display: flex;
 		flex-direction: column;
+	}
+	.submit-button {
+		width: 70px;
 	}
 </style>

@@ -57,9 +57,16 @@ export class Converter {
 		return new Converter(wb, newwb, ws, template, databank, file.name);
 	};
 
+	test = async () => {
+		await this.addExtraSheets();
+
+		await this.saveFile();
+	};
+
 	convert = async () => {
 		const { startRow, mappings } = this.template;
 		const newws = this.newwb.worksheets[0];
+		await this.addExtraSheets();
 
 		this.ws.eachRow((row, idx) => {
 			if (idx < startRow) {
@@ -82,12 +89,33 @@ export class Converter {
 			}
 
 			data.sku_id = null;
-			data.availability = 1;
+			data.availability = '1';
 			data.status = 'active';
 
 			newws.addRow(data);
 		});
+
+		this.setColumnsFormat();
+
 		await this.saveFile();
+	};
+
+	setColumnsFormat = () => {
+		this.newwb.getWorksheet('product').eachColumnKey((col) => {
+			col.eachCell((cell) => {
+				switch (col.key) {
+					case 'basic_harga_normal':
+						cell.numFmt = '#,##0.00';
+						break;
+					case 'basic_harga_diskon':
+						cell.numFmt = '#,##0.00';
+						break;
+					default:
+						cell.numFmt = '@';
+						break;
+				}
+			});
+		});
 	};
 
 	addCustomData = (data: any, row: Exceljs.Row) => {
@@ -104,7 +132,7 @@ export class Converter {
 			: 1;
 	};
 
-	saveFile = async () => {
+	private saveFile = async () => {
 		const buffer = await this.newwb.xlsx.writeBuffer();
 		const blob = new Blob([buffer], {
 			type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -137,6 +165,34 @@ export class Converter {
 		Converter.addHeader(newws);
 
 		return newwb;
+	};
+
+	addExtraSheets = async () => {
+		const { default: brand } = await import('../public/brand.json');
+		const { default: category } = await import('../public/category.json');
+
+		this.newwb.addWorksheet('brand');
+		this.newwb.addWorksheet('category');
+
+		const brandws = this.newwb.getWorksheet('brand');
+		const categoryws = this.newwb.getWorksheet('category');
+
+		brandws.columns = [
+			{ header: 'id', key: 'id', width: 10 },
+			{ header: 'name', key: 'name', width: 70 }
+		];
+		categoryws.columns = [
+			{ header: 'id', key: 'id', width: 10 },
+			{ header: 'name', key: 'name', width: 70 }
+		];
+
+		brand.forEach((b) => {
+			brandws.addRow(b);
+		});
+
+		category.forEach((c) => {
+			categoryws.addRow(c);
+		});
 	};
 
 	private static addHeader = (ws: Exceljs.Worksheet) => {
@@ -176,7 +232,7 @@ export class Converter {
 			barcode: mappings.barcode ? row.getCell(mappings.barcode).value : null,
 			brand_id: mappings.brand_id ? row.getCell(mappings.brand_id).value : null,
 			brand_name: mappings.brand_name ? row.getCell(mappings.brand_name).value : 'Others',
-			category_id: mappings.category_id ? row.getCell(mappings.category_id).value : null,
+			category_id: '7',
 			alias: mappings.alias ? row.getCell(mappings.alias).value : null,
 			availability: mappings.availability ? row.getCell(mappings.availability).value : null,
 			status: mappings.status ? row.getCell(mappings.status).value : null,

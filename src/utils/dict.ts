@@ -1,5 +1,5 @@
 import Exceljs from 'exceljs';
-export const templateTypes = ['default'] as const;
+export const templateTypes = ['SID Retail PRO'] as const;
 
 export type TemplateTypes = (typeof templateTypes)[number];
 
@@ -85,7 +85,7 @@ export type DictionaryRow = {
 };
 
 export const dict: Dictionary = {
-	default: {
+	'SID Retail PRO': {
 		startRow: 2,
 		sheetName: 'Sheet1',
 		// mappings: {

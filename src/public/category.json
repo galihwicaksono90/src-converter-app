@@ -1,0 +1,238 @@
+[
+  {
+    "id": 1,
+    "name": "ROKOK"
+  },
+  {
+    "id": 7,
+    "name": "LAIN LAIN"
+  },
+  {
+    "id": 8,
+    "name": "BUMBU MASAKAN"
+  },
+  {
+    "id": 9,
+    "name": "KEBUTUHAN DASAR"
+  },
+  {
+    "id": 10,
+    "name": "MAKANAN KALENG"
+  },
+  {
+    "id": 11,
+    "name": "MAKANAN BEKU"
+  },
+  {
+    "id": 12,
+    "name": "MAKANAN INSTAN"
+  },
+  {
+    "id": 13,
+    "name": "COKLAT & PERMEN"
+  },
+  {
+    "id": 14,
+    "name": "CEMILAN & BISKUIT"
+  },
+  {
+    "id": 15,
+    "name": "BUBUK MINUMAN & CREAMER"
+  },
+  {
+    "id": 16,
+    "name": "MINUMAN RINGAN"
+  },
+  {
+    "id": 17,
+    "name": "JUS"
+  },
+  {
+    "id": 18,
+    "name": "KOPI"
+  },
+  {
+    "id": 19,
+    "name": "TEH"
+  },
+  {
+    "id": 20,
+    "name": "AIR MINERAL"
+  },
+  {
+    "id": 21,
+    "name": "SIRUP"
+  },
+  {
+    "id": 22,
+    "name": "OBAT2AN"
+  },
+  {
+    "id": 23,
+    "name": "KOSMETIK"
+  },
+  {
+    "id": 24,
+    "name": "PERAWATAN BADAN"
+  },
+  {
+    "id": 25,
+    "name": "PERAWATAN RAMBUT"
+  },
+  {
+    "id": 26,
+    "name": "PERAWATAN PRIA"
+  },
+  {
+    "id": 27,
+    "name": "PERAWATAN DIRI"
+  },
+  {
+    "id": 28,
+    "name": "OFFICE SUPLY"
+  },
+  {
+    "id": 29,
+    "name": "STATIONARY"
+  },
+  {
+    "id": 30,
+    "name": "TISU"
+  },
+  {
+    "id": 31,
+    "name": "DETERGEN & PEMBERSIH"
+  },
+  {
+    "id": 32,
+    "name": "PEMBASMI KUMAN & PEWANGI"
+  },
+  {
+    "id": 33,
+    "name": "PERLENGKAPAN RUMAH TANGGA & HOBI"
+  },
+  {
+    "id": 34,
+    "name": "ELPIJI"
+  },
+  {
+    "id": 35,
+    "name": "HANDUK"
+  },
+  {
+    "id": 42,
+    "name": "MERCHANDISE"
+  },
+  {
+    "id": 43,
+    "name": "Khusus Karyawan"
+  },
+  {
+    "id": 44,
+    "name": "product/category.consumable"
+  },
+  {
+    "id": 45,
+    "name": "product/category.device"
+  },
+  {
+    "id": 46,
+    "name": "product/category.accesories"
+  },
+  {
+    "id": 47,
+    "name": "Kategori 2"
+  },
+  {
+    "id": 48,
+    "name": "Kategori 1"
+  },
+  {
+    "id": 49,
+    "name": "product/category.soda"
+  },
+  {
+    "id": 50,
+    "name": "product/category.soda"
+  },
+  {
+    "id": 51,
+    "name": "product/category.water"
+  },
+  {
+    "id": 52,
+    "name": "product/category.water"
+  },
+  {
+    "id": 53,
+    "name": "product/category.non-alcohol"
+  },
+  {
+    "id": 54,
+    "name": "product/category.csd"
+  },
+  {
+    "id": 55,
+    "name": "product/category.csd-water"
+  },
+  {
+    "id": 56,
+    "name": "product/category.tobacco"
+  },
+  {
+    "id": 57,
+    "name": "product/category.cigaratte"
+  },
+  {
+    "id": 58,
+    "name": "product/category.energy"
+  },
+  {
+    "id": 59,
+    "name": "product/category.others"
+  },
+  {
+    "id": 60,
+    "name": "product/category.others"
+  },
+  {
+    "id": 61,
+    "name": "product/category.wine"
+  },
+  {
+    "id": 62,
+    "name": "product/category.wine"
+  },
+  {
+    "id": 63,
+    "name": "product/category.whisky"
+  },
+  {
+    "id": 64,
+    "name": "product/category.whisky"
+  },
+  {
+    "id": 65,
+    "name": "product/category.beer"
+  },
+  {
+    "id": 66,
+    "name": "product/category.beer"
+  },
+  {
+    "id": 67,
+    "name": "product/category.tissue"
+  },
+  {
+    "id": 68,
+    "name": "product/category.tissue"
+  },
+  {
+    "id": 69,
+    "name": "product/category.vitamin-c"
+  },
+  {
+    "id": 70,
+    "name": "product/category.csd-soda"
+  }
+]
