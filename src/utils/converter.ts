@@ -57,12 +57,6 @@ export class Converter {
 		return new Converter(wb, newwb, ws, template, databank, file.name);
 	};
 
-	test = async () => {
-		await this.addExtraSheets();
-
-		await this.saveFile();
-	};
-
 	convert = async () => {
 		const { startRow, mappings } = this.template;
 		const newws = this.newwb.worksheets[0];
@@ -91,6 +85,7 @@ export class Converter {
 			data.sku_id = null;
 			data.availability = '1';
 			data.status = 'active';
+			data.basic_harga_diskon = null;
 
 			newws.addRow(data);
 		});
@@ -188,6 +183,21 @@ export class Converter {
 
 		brand.forEach((b) => {
 			brandws.addRow(b);
+		});
+
+		['A', 'B'].forEach((x) => {
+			brandws.getCell(`${x}1`).fill = {
+				type: 'pattern',
+				pattern: 'solid',
+				fgColor: { argb: 'ffffa3' }
+			};
+			brandws.getCell(`${x}1`).font = { bold: true };
+			categoryws.getCell(`${x}1`).fill = {
+				type: 'pattern',
+				pattern: 'solid',
+				fgColor: { argb: 'ffffa3' }
+			};
+			categoryws.getCell(`${x}1`).font = { bold: true };
 		});
 
 		category.forEach((c) => {

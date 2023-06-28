@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import Select from '$components/Select.svelte';
+	import FileSelect from '$components/FileSelect.svelte';
 	import { templateTypes } from '$utils/dict';
 	import type { TemplateTypes } from '$utils/dict';
 	import { Converter } from '$utils/converter.js';
@@ -9,9 +10,7 @@
 	export let data;
 
 	let templateName: TemplateTypes;
-	let files: FileList | null = null;
 	let file: File | null = null;
-	let inputRef: HTMLInputElement | null = null;
 	let databank: Record<string, DataBank> = {};
 	let loading = false;
 
@@ -36,10 +35,6 @@
 			loading = false;
 		}
 	};
-
-	$: if (files) {
-		file = files[0];
-	}
 </script>
 
 <svelte:head>
@@ -47,28 +42,16 @@
 	<meta name="description" content="Xlsx template converter" />
 </svelte:head>
 
-<section class="main">
+<section class="flex flex-col justify-center container mx-auto gap-8 max-w-[700px] pt-12 px-4">
+	<h1 class="text-3xl font-black text-center">SRC Template Converter</h1>
 	<Select options={[...templateTypes]} bind:value={templateName} title="Nama template" />
 
-	<input
-		type="file"
-		name="excel"
-		accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-		bind:files
-		bind:this={inputRef}
-	/>
-	<button on:click={processFile} disabled={loading} class="submit-button">Convert</button>
-	{#if loading}
-		<h1>Loading....</h1>
-	{/if}
+	<FileSelect bind:file {loading} />
+	<button
+		on:click={processFile}
+		disabled={loading || !file}
+		class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-500"
+	>
+		{loading ? 'Converting...' : 'Convert'}
+	</button>
 </section>
-
-<style>
-	.main {
-		display: flex;
-		flex-direction: column;
-	}
-	.submit-button {
-		width: 70px;
-	}
-</style>
