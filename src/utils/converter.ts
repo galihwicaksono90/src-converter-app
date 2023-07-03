@@ -18,85 +18,54 @@ export type DataBank = {
 };
 
 export class Converter {
-	wb: Exceljs.Workbook;
-	newwb: Exceljs.Workbook;
-	template: DictionaryMapProperties;
-	ws: Exceljs.Worksheet;
-	databank: Record<string, DataBank>;
-	filename: string;
+	_sourceWb?: Exceljs.Workbook;
+	_targetWb?: Exceljs.Workbook;
+	_sourceWs?: Exceljs.Worksheet;
+	_template: DictionaryMapProperties;
+	_databank: Record<string, DataBank>;
+	_file: File;
 
-	private constructor(
-		wb: Exceljs.Workbook,
-		newwb: Exceljs.Workbook,
-		ws: Exceljs.Worksheet,
-		template: DictionaryMapProperties,
-		databank: Record<string, DataBank>,
-		filename: string
-	) {
-		this.template = template;
-		this.wb = wb;
-		this.ws = ws;
-		this.databank = databank;
-		this.newwb = newwb;
-		this.filename = filename;
+	constructor(databank: Record<string, DataBank>, templateType: TemplateTypes, file: File) {
+		this._databank = databank;
+		this._template = dict[templateType];
+		this._file = file;
 	}
 
-	public static build = async (
-		file: File,
-		templateName: TemplateTypes,
-		databank: Record<string, DataBank>
-	) => {
-		const wb = new Exceljs.Workbook();
-		const readFile = await this.readFile(file);
-		await wb.xlsx.load(readFile);
+	build = async () => {
+		// initialize source worbook
+		this._sourceWb = new Exceljs.Workbook();
+		const readFile = await this._readFile(this._file);
+		await this._sourceWb.xlsx.load(readFile);
 
-		const template = dict[templateName];
-		const ws = wb.getWorksheet(template.sheetName);
-		const newwb = Converter.createWorkbook();
+		//initialize source worksheet
+		this._sourceWs = this._sourceWb.getWorksheet(this._template.sheetName);
 
-		return new Converter(wb, newwb, ws, template, databank, file.name);
+		//initialize target workbook
+		await this._createWorkbook();
 	};
 
 	convert = async () => {
-		const { startRow, mappings } = this.template;
-		const newws = this.newwb.worksheets[0];
-		await this.addExtraSheets();
+		if (!this._targetWb || !this._sourceWs) {
+			return;
+		}
 
-		this.ws.eachRow((row, idx) => {
-			if (idx < startRow) {
-				return;
-			}
+		this._convertRows();
 
-			let barcode = '';
-			let data: any;
+		this._setColumnsFormat();
 
-			if (mappings.barcode) {
-				barcode = row.getCell(mappings.barcode).toString();
-			}
-
-			data = this.databank[barcode];
-
-			if (!data) {
-				data = this.mapRow(row);
-			} else {
-				this.addCustomData(data, row);
-			}
-
-			data.sku_id = null;
-			data.availability = '1';
-			data.status = 'active';
-			data.basic_harga_diskon = null;
-
-			newws.addRow(data);
-		});
-
-		this.setColumnsFormat();
-
-		await this.saveFile();
+		await this._saveFile();
 	};
 
-	setColumnsFormat = () => {
-		this.newwb.getWorksheet('product').eachColumnKey((col) => {
+	_convertRows = () => {
+		console.log('not implementnd');
+	};
+
+	_setColumnsFormat = () => {
+		if (!this._targetWb) {
+			return;
+		}
+
+		this._targetWb.getWorksheet('product').eachColumnKey((col) => {
 			col.eachCell((cell) => {
 				switch (col.key) {
 					case 'basic_harga_normal':
@@ -113,33 +82,22 @@ export class Converter {
 		});
 	};
 
-	addCustomData = (data: any, row: Exceljs.Row) => {
-		const { mappings } = this.template;
-		data.packaging = mappings.packaging ? row.getCell(mappings.packaging).value : null;
-		data.packaging_amount = mappings.packaging_amount
-			? row.getCell(mappings.packaging_amount).value
-			: 1;
-		data.basic_harga_normal = mappings.basic_harga_normal
-			? row.getCell(mappings.basic_harga_normal).value
-			: 1;
-		data.basic_harga_diskon = mappings.basic_harga_diskon
-			? row.getCell(mappings.basic_harga_diskon).value
-			: 1;
-	};
-
-	private saveFile = async () => {
-		const buffer = await this.newwb.xlsx.writeBuffer();
+	_saveFile = async () => {
+		if (!this._targetWb) {
+			return;
+		}
+		const buffer = await this._targetWb.xlsx.writeBuffer();
 		const blob = new Blob([buffer], {
 			type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 		});
 		const link = document.createElement('a');
 		link.href = URL.createObjectURL(blob);
-		link.download = `${this.filename.split('.')[0]}(converted).xlsx`;
+		link.download = `${this._file.name.split('.')[0]}(converted).xlsx`;
 		link.click();
 		URL.revokeObjectURL(link.href);
 	};
 
-	static readFile = (file: File): Promise<ArrayBuffer> => {
+	_readFile = (file: File): Promise<ArrayBuffer> => {
 		return new Promise((resolve, reject) => {
 			if (!file) {
 				reject();
@@ -152,25 +110,30 @@ export class Converter {
 		});
 	};
 
-	static createWorkbook = (sheetName = 'product') => {
-		const newwb = new Exceljs.Workbook();
+	_createWorkbook = async () => {
+		// initialize target workbook workseets
+		this._targetWb = new Exceljs.Workbook();
 
-		newwb.addWorksheet(sheetName);
-		const newws = newwb.getWorksheet(sheetName);
-		Converter.addHeader(newws);
+		this._targetWb.addWorksheet('product');
+		await this._addExtraSheets();
 
-		return newwb;
+		//add header to product sheet
+		this._addHeader();
 	};
 
-	addExtraSheets = async () => {
+	_addExtraSheets = async () => {
+		if (!this._targetWb) {
+			return;
+		}
+
 		const { default: brand } = await import('../public/brand.json');
 		const { default: category } = await import('../public/category.json');
 
-		this.newwb.addWorksheet('brand');
-		this.newwb.addWorksheet('category');
+		this._targetWb.addWorksheet('brand');
+		this._targetWb.addWorksheet('category');
 
-		const brandws = this.newwb.getWorksheet('brand');
-		const categoryws = this.newwb.getWorksheet('category');
+		const brandws = this._targetWb.getWorksheet('brand');
+		const categoryws = this._targetWb.getWorksheet('category');
 
 		brandws.columns = [
 			{ header: 'id', key: 'id', width: 10 },
@@ -205,9 +168,15 @@ export class Converter {
 		});
 	};
 
-	private static addHeader = (ws: Exceljs.Worksheet) => {
+	_addHeader = () => {
+		const ws = this._targetWb?.getWorksheet('product');
+		if (!ws) {
+			return;
+		}
+
 		ws.columns = excelColumns;
 		ws.addRow(header);
+
 		const t = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O'] as const;
 		const r = ['B', 'C', 'F', 'G', 'I', 'J', 'K', 'L', 'M'];
 
@@ -233,8 +202,8 @@ export class Converter {
 		ws.getRow(2).height = 100;
 	};
 
-	mapRow = (row: Exceljs.Row): Row => {
-		const { mappings } = this.template;
+	_mapRow = (row: Exceljs.Row): Row => {
+		const { mappings } = this._template;
 		return {
 			sku_id: mappings.sku_id ? row.getCell(mappings.sku_id).value : null,
 			name: mappings.name ? row.getCell(mappings.name).value : null,

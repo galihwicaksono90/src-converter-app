@@ -117,7 +117,7 @@ export const dict: Dictionary = {
 			//status: 'j',
 			packaging: 10,
 			packaging_amount: 9,
-			basic_harga_normal: 15
+			basic_harga_normal: 17
 			// basic_harga_diskon: 17
 		} as const
 	}

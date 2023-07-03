@@ -6,6 +6,7 @@
 	import type { TemplateTypes } from '$utils/dict';
 	import { Converter } from '$utils/converter.js';
 	import type { DataBank } from '$utils/converter.js';
+	import { RetailPro } from '$utils/retailPro.js';
 
 	export let data;
 
@@ -26,9 +27,24 @@
 			return;
 		}
 		loading = true;
+
+		let converter: Converter | null = null;
+
+		switch (templateName) {
+			case 'SID Retail PRO':
+				converter = new RetailPro(databank, templateName, file);
+				break;
+			default:
+				break;
+		}
+
+		if (!converter) {
+			return;
+		}
+
 		try {
-			const converter = await Converter.build(file, templateName, databank);
-			await converter.convert();
+			await converter.build();
+			converter.convert();
 		} catch (e) {
 			console.log(e);
 		} finally {
