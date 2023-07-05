@@ -1,5 +1,9 @@
-import Exceljs from 'exceljs';
-export const templateTypes = ['SID Retail PRO'] as const;
+import type Exceljs from 'exceljs';
+
+export const templateTypes = [
+	'SID Retail PRO (Harga Toko)',
+	'SID Retail PRO (Harga Partai)'
+] as const;
 
 export type TemplateTypes = (typeof templateTypes)[number];
 
@@ -61,63 +65,67 @@ export interface Row {
 // }
 
 export type DictionaryRow = {
-	sku_id?: number;
-	name?: number;
-	other_name?: number;
-	barcode?: number;
-	brand_id?: number;
-	brand_name?: number;
-	category_id?: number;
-	alias?: number;
-	availability?: number;
-	status?: number;
-	packaging?: number;
-	packaging_amount?: number;
-	basic_harga_normal?: number;
-	basic_harga_diskon?: number;
-	basic_tanggal_kadaluarsa?: number;
-	gold_harga_normal?: number;
-	gold_harga_diskon?: number;
-	gold_tanggal_kadaluarsa?: number;
-	src_harga_normal?: number;
-	src_harga_diskon?: number;
-	src_tanggal_kadaluarsa?: number;
+	sku_id?: string;
+	name?: string;
+	other_name?: string;
+	barcode?: string;
+	brand_id?: string;
+	brand_name?: string;
+	category_id?: string;
+	alias?: string;
+	availability?: string;
+	status?: string;
+	packaging?: string;
+	packaging_amount?: string;
+	basic_harga_normal?: string;
+	basic_harga_diskon?: string;
+	basic_tanggal_kadaluarsa?: string;
+	gold_harga_normal?: string;
+	gold_harga_diskon?: string;
+	gold_tanggal_kadaluarsa?: string;
+	src_harga_normal?: string;
+	src_harga_diskon?: string;
+	src_tanggal_kadaluarsa?: string;
 };
 
 export const dict: Dictionary = {
-	'SID Retail PRO': {
+	'SID Retail PRO (Harga Toko)': {
 		startRow: 2,
 		sheetName: 'Sheet1',
-		// mappings: {
-		// 	sku_id: 'KODE_BARANG',
-		// 	name: 'NAMA',
-		// 	//other_name: '',
-		// 	barcode: 'KODE_BARCODE',
-		// 	// brand_id: 'e',
-		// 	//brand_name: 'f',
-		// 	category_id: 'KATEGORI',
-		// 	//alias: 'h',
-		// 	//availability: 'i',
-		// 	//status: 'j',
-		// 	packaging: 'SATUAN_1',
-		// 	packaging_amount: 'ISI',
-		// 	basic_harga_normal: 'HARGA_TOKO_1',
-		// 	basic_harga_diskon: 'HARGA_PARTAI_1'
-		// },
 		mappings: {
-			sku_id: 1,
-			name: 4,
+			// sku_id: 1,
+			name: 'NAMA',
 			//other_name: '',
-			barcode: 2,
-			brand_id: 3,
+			barcode: 'KODE_BARCODE',
+			brand_id: 'KODE_BARCODE_2',
 			//brand_name: 'f',
-			category_id: 5,
+			category_id: 'KATEGORI',
 			//alias: 'h',
 			//availability: 'i',
 			//status: 'j',
-			packaging: 10,
-			packaging_amount: 9,
-			basic_harga_normal: 17
+			packaging: 'SATUAN_1',
+			packaging_amount: 'ISI',
+			basic_harga_normal: 'HARGA_TOKO_1'
+			// basic_harga_diskon: 17
+		} as const
+	},
+	'SID Retail PRO (Harga Partai)': {
+		startRow: 2,
+		sheetName: 'Sheet1',
+		mappings: {
+			// sku_id: 1,
+			name: 'NAMA',
+			//other_name: '',
+			barcode: 'KODE_BARCODE',
+			brand_id: 'KODE_BARCODE_2',
+			//brand_name: 'f',
+			category_id: 'KATEGORI',
+			//alias: 'h',
+			//availability: 'i',
+			//status: 'j',
+			packaging: 'SATUAN_1',
+			packaging_amount: 'ISI',
+			basic_harga_normal: 'HARGA_PARTAI_1'
 			// basic_harga_diskon: 17
 		} as const
 	}

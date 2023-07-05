@@ -4,9 +4,10 @@
 	import FileSelect from '$components/FileSelect.svelte';
 	import { templateTypes } from '$utils/dict';
 	import type { TemplateTypes } from '$utils/dict';
-	import { Converter } from '$utils/converter.js';
+	import type { Converter } from '$utils/converter.js';
 	import type { DataBank } from '$utils/converter.js';
-	import { RetailPro } from '$utils/retailPro.js';
+	import { RetailProHargaToko } from '$utils/retailProHargaToko.js';
+	import { RetailProHargaPartai } from '$utils/retailProHargaPartai.js';
 
 	export let data;
 
@@ -31,8 +32,11 @@
 		let converter: Converter | null = null;
 
 		switch (templateName) {
-			case 'SID Retail PRO':
-				converter = new RetailPro(databank, templateName, file);
+			case 'SID Retail PRO (Harga Toko)':
+				converter = new RetailProHargaToko(databank, templateName, file);
+				break;
+			case 'SID Retail PRO (Harga Partai)':
+				converter = new RetailProHargaPartai(databank, templateName, file);
 				break;
 			default:
 				break;

@@ -24,6 +24,7 @@ export class Converter {
 	_template: DictionaryMapProperties;
 	_databank: Record<string, DataBank>;
 	_file: File;
+	_headers: Record<string, number> = {};
 
 	constructor(databank: Record<string, DataBank>, templateType: TemplateTypes, file: File) {
 		this._databank = databank;
@@ -42,6 +43,7 @@ export class Converter {
 
 		//initialize target workbook
 		await this._createWorkbook();
+		this._headers = this._getWorksheetHeaders();
 	};
 
 	convert = async () => {
@@ -204,48 +206,51 @@ export class Converter {
 
 	_mapRow = (row: Exceljs.Row): Row => {
 		const { mappings } = this._template;
+		const headers = this._headers;
 		return {
-			sku_id: mappings.sku_id ? row.getCell(mappings.sku_id).value : null,
-			name: mappings.name ? row.getCell(mappings.name).value : null,
-			other_name: mappings.other_name ? row.getCell(mappings.other_name).value : null,
-			barcode: mappings.barcode ? row.getCell(mappings.barcode).value : null,
-			brand_id: mappings.brand_id ? row.getCell(mappings.brand_id).value : null,
-			brand_name: mappings.brand_name ? row.getCell(mappings.brand_name).value : 'Others',
+			sku_id: mappings.sku_id ? row.getCell(headers[mappings.sku_id]).value : null,
+			name: mappings.name ? row.getCell(headers[mappings.name]).value : null,
+			other_name: mappings.other_name ? row.getCell(headers[mappings.other_name]).value : null,
+			barcode: mappings.barcode ? row.getCell(headers[mappings.barcode]).value : null,
+			brand_id: mappings.brand_id ? row.getCell(headers[mappings.brand_id]).value : null,
+			brand_name: mappings.brand_name ? row.getCell(headers[mappings.brand_name]).value : 'Others',
 			category_id: '7',
-			alias: mappings.alias ? row.getCell(mappings.alias).value : null,
-			availability: mappings.availability ? row.getCell(mappings.availability).value : null,
-			status: mappings.status ? row.getCell(mappings.status).value : null,
-			packaging: mappings.packaging ? row.getCell(mappings.packaging).value : null,
+			// alias: mappings.alias ? row.getCell(headers[mappings.alias]).value : null,
+			// availability: mappings.availability
+			// 	? row.getCell(headers[mappings.availability]).value
+			// 	: null,
+			// status: mappings.status ? row.getCell(headers[mappings.status]).value : null,
+			packaging: mappings.packaging ? row.getCell(headers[mappings.packaging]).value : null,
 			packaging_amount: mappings.packaging_amount
-				? row.getCell(mappings.packaging_amount).value
+				? row.getCell(headers[mappings.packaging_amount]).value
 				: null,
 			basic_harga_normal: mappings.basic_harga_normal
-				? row.getCell(mappings.basic_harga_normal).value
+				? row.getCell(headers[mappings.basic_harga_normal]).value
 				: null,
 			basic_harga_diskon: mappings.basic_harga_diskon
-				? row.getCell(mappings.basic_harga_diskon).value
+				? row.getCell(headers[mappings.basic_harga_diskon]).value
 				: null,
 			basic_tanggal_kadaluarsa: mappings.basic_tanggal_kadaluarsa
-				? row.getCell(mappings.basic_tanggal_kadaluarsa).value
-				: null,
-			gold_harga_normal: mappings.gold_harga_normal
-				? row.getCell(mappings.gold_harga_normal).value
-				: null,
-			gold_harga_diskon: mappings.gold_harga_diskon
-				? row.getCell(mappings.gold_harga_diskon).value
-				: null,
-			gold_tanggal_kadaluarsa: mappings.gold_tanggal_kadaluarsa
-				? row.getCell(mappings.gold_tanggal_kadaluarsa).value
-				: null,
-			src_harga_normal: mappings.src_harga_normal
-				? row.getCell(mappings.src_harga_normal).value
-				: null,
-			src_harga_diskon: mappings.src_harga_diskon
-				? row.getCell(mappings.src_harga_diskon).value
-				: null,
-			src_tanggal_kadaluarsa: mappings.src_tanggal_kadaluarsa
-				? row.getCell(mappings.src_tanggal_kadaluarsa).value
+				? row.getCell(headers[mappings.basic_tanggal_kadaluarsa]).value
 				: null
 		};
+	};
+
+	_getWorksheetHeaders = (): Record<string, number> => {
+		const d: Record<string, number> = {};
+		if (!this._sourceWs) {
+			return d;
+		}
+
+		const firstRow = this._sourceWs.getRow(1);
+
+		firstRow.eachCell((cell, index) => {
+			if (!cell.value) {
+				return;
+			}
+			d[cell.value?.toString()] = index;
+		});
+
+		return d;
 	};
 }
