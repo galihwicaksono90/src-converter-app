@@ -10,24 +10,14 @@
 		"sourceMap": true,
 		"strict": true,
 		"paths": {
-			"$utils": [
-				"./src/utils"
-			],
-			"$utils/*": [
-				"./src/utils/*"
-			],
-			"$lib": [
-				"./src/lib"
-			],
-			"$lib/*": [
-				"./src/lib/*"
-			],
-			"$components": [
-				"./src/components"
-			],
-			"$components/*": [
-				"./src/components/*"
-			]
+			"$utils": ["./src/utils"],
+			"$utils/*": ["./src/utils/*"],
+			"$lib": ["./src/lib"],
+			"$lib/*": ["./src/lib/*"],
+			"$components": ["./src/components"],
+			"$components/*": ["./src/components/*"],
+			"$stores": ["./src/stores"],
+			"$stores/*": ["./src/stores/*"]
 		}
 	}
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias

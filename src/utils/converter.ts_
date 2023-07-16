@@ -1,130 +1,65 @@
-import type { DataBank } from '$stores/databankStore';
-import { excelColumns, header } from '$utils/dict';
+import type { DictionaryMapProperties, Row, TemplateTypes } from './dict';
 import Exceljs from 'exceljs';
-import type { DictionaryMapProperties, DictionaryRow, Row, TemplateType } from './dict';
+import { dict, excelColumns, header } from '$utils/dict';
+
+export type DataBank = {
+	sku_id: string;
+	name: string;
+	barcode: string;
+	brand_id: string;
+	brand_name: string;
+	category_id: string;
+	category_name: string;
+	pin_up: string;
+	created_at: string;
+	'Special Rate for Pojok Modal (EKF)': string;
+	'dapat dipesan melalui GSM / GSM Hub / ke Mitra Hub / Supplier': string;
+	'Produk baru (30 hari terakhir)': string;
+};
 
 export class Converter {
 	_sourceWb?: Exceljs.Workbook;
 	_targetWb?: Exceljs.Workbook;
 	_sourceWs?: Exceljs.Worksheet;
-	_filename = '';
+	_template: DictionaryMapProperties;
+	_databank: Record<string, DataBank>;
+	_file: File;
+	_headers: Record<string, number> = {};
 
-	build = async (file: File) => {
-		this._filename = file.name.split('.')[0];
+	constructor(databank: Record<string, DataBank>, templateType: TemplateTypes, file: File) {
+		this._databank = databank;
+		this._template = dict[templateType];
+		this._file = file;
+	}
+
+	build = async () => {
 		// initialize source worbook
 		this._sourceWb = new Exceljs.Workbook();
-		const readFile = await this._readFile(file);
+		const readFile = await this._readFile(this._file);
 		await this._sourceWb.xlsx.load(readFile);
 
 		//initialize source worksheet
-		this._sourceWs = this._sourceWb.worksheets[0];
+		this._sourceWs = this._sourceWb.getWorksheet(this._template.sheetName);
 
 		//initialize target workbook
 		await this._createWorkbook();
+		this._headers = this._getWorksheetHeaders();
 	};
 
-	convert = async (
-		databank: Record<string, DataBank>,
-		template: DictionaryMapProperties,
-		templateType: TemplateType
-	) => {
+	convert = async () => {
 		if (!this._targetWb || !this._sourceWs) {
 			return;
 		}
 
-		const { startRow, mappings } = template;
-
-		this._convertRows(startRow, databank, mappings, templateType);
+		this._convertRows();
 
 		this._setColumnsFormat();
 
 		await this._saveFile();
 	};
 
-	_convertRows = (
-		startRow: number,
-		databank: Record<string, DataBank>,
-		mappings: DictionaryRow,
-		templateType: TemplateType
-	) => {
-		if (!this._targetWb || !this._sourceWs) {
-			return;
-		}
-		const headers = this._getWorksheetHeaders(startRow);
-
-		const targetWs = this._targetWb.getWorksheet('product');
-
-		this._sourceWs.eachRow((row, idx) => {
-			if (idx < startRow + 1 || !mappings.packaging || !mappings.basic_harga_normal) {
-				return;
-			}
-
-			const packaging = row.getCell(headers[mappings.packaging]).value;
-			let harga = row.getCell(headers[mappings.basic_harga_normal]).value;
-
-			let barcode = '';
-			let data: Record<string, any>;
-
-			if (mappings.barcode) {
-				barcode = row.getCell(headers[mappings.barcode]).value as string;
-			}
-
-			data = this._getDataFromBarcode(barcode, databank);
-
-			if (!!packaging && harga) {
-				if (typeof harga === 'string') {
-					harga = parseInt(harga);
-				}
-				if ((harga as number) < 0) {
-					return;
-				}
-				if (!data) {
-					data = this._mapRow(row, mappings, headers);
-				}
-
-				data.sku_id = null;
-				data.availability = '1';
-				data.status = 'active';
-				data.basic_harga_diskon = null;
-				data.packaging = packaging;
-				data.basic_harga_normal = harga;
-				data.packaging_amount = 1;
-
-				targetWs.addRow(data);
-
-				if (templateType === 'Retail PRO') {
-					if (
-						mappings.packaging2 &&
-						mappings.basic_harga_normal2 &&
-						mappings.packaging2 !== '' &&
-						mappings.basic_harga_normal2 !== ''
-					) {
-						const packaging2 = row.getCell(headers[mappings.packaging2]).value;
-						let harga2 = row.getCell(headers[mappings.basic_harga_normal2]).value;
-
-						if (!packaging2 || !harga2) {
-							return;
-						}
-
-						if (typeof harga2 === 'string') {
-							harga2 = parseInt(harga2);
-						}
-
-						if ((harga2 as number) < 0) {
-							return;
-						}
-
-						data.packaging = packaging2;
-						data.basic_harga_normal = harga2;
-						targetWs.addRow(data);
-					}
-				}
-			}
-		});
-	};
-
-	_getDataFromBarcode = (barcode: string, databank: Record<string, DataBank>) => {
-		return databank[barcode];
+	_convertRows = () => {
+		console.log('not implementnd');
 	};
 
 	_setColumnsFormat = () => {
@@ -159,7 +94,7 @@ export class Converter {
 		});
 		const link = document.createElement('a');
 		link.href = URL.createObjectURL(blob);
-		link.download = `${this._filename}(converted).xlsx`;
+		link.download = `${this._file.name.split('.')[0]}(converted).xlsx`;
 		link.click();
 		URL.revokeObjectURL(link.href);
 	};
@@ -269,13 +204,45 @@ export class Converter {
 		ws.getRow(2).height = 100;
 	};
 
-	_getWorksheetHeaders = (headerRow = 1): Record<string, number> => {
+	_mapRow = (row: Exceljs.Row): Row => {
+		const { mappings } = this._template;
+		const headers = this._headers;
+		return {
+			sku_id: mappings.sku_id ? row.getCell(headers[mappings.sku_id]).value : null,
+			name: mappings.name ? row.getCell(headers[mappings.name]).value : null,
+			other_name: mappings.other_name ? row.getCell(headers[mappings.other_name]).value : null,
+			barcode: mappings.barcode ? row.getCell(headers[mappings.barcode]).value : null,
+			brand_id: mappings.brand_id ? row.getCell(headers[mappings.brand_id]).value : null,
+			brand_name: mappings.brand_name ? row.getCell(headers[mappings.brand_name]).value : 'Others',
+			category_id: '7',
+			// alias: mappings.alias ? row.getCell(headers[mappings.alias]).value : null,
+			// availability: mappings.availability
+			// 	? row.getCell(headers[mappings.availability]).value
+			// 	: null,
+			// status: mappings.status ? row.getCell(headers[mappings.status]).value : null,
+			packaging: mappings.packaging ? row.getCell(headers[mappings.packaging]).value : null,
+			packaging_amount: mappings.packaging_amount
+				? row.getCell(headers[mappings.packaging_amount]).value
+				: null,
+			basic_harga_normal: mappings.basic_harga_normal
+				? row.getCell(headers[mappings.basic_harga_normal]).value
+				: null,
+			basic_harga_diskon: mappings.basic_harga_diskon
+				? row.getCell(headers[mappings.basic_harga_diskon]).value
+				: null,
+			basic_tanggal_kadaluarsa: mappings.basic_tanggal_kadaluarsa
+				? row.getCell(headers[mappings.basic_tanggal_kadaluarsa]).value
+				: null
+		};
+	};
+
+	_getWorksheetHeaders = (): Record<string, number> => {
 		const d: Record<string, number> = {};
 		if (!this._sourceWs) {
 			return d;
 		}
 
-		const firstRow = this._sourceWs.getRow(headerRow);
+		const firstRow = this._sourceWs.getRow(1);
 
 		firstRow.eachCell((cell, index) => {
 			if (!cell.value) {
@@ -287,28 +254,7 @@ export class Converter {
 		return d;
 	};
 
-	getHeaders = (rowNumber = 1) => {
-		const h = this._getWorksheetHeaders(rowNumber);
-		return Object.keys(h);
-	};
-
-	_mapRow = (row: Exceljs.Row, mappings: DictionaryRow, headers: Record<string, number>): Row => {
-		console.log(row.getCell(headers[mappings.basic_harga_normal!]).value ?? 'hello');
-		return {
-			sku_id: mappings.sku_id ? row.getCell(headers[mappings.sku_id]).value : null,
-			name: mappings.name ? row.getCell(headers[mappings.name]).value : null,
-			other_name: mappings.other_name ? row.getCell(headers[mappings.other_name]).value : null,
-			barcode: mappings.barcode ? row.getCell(headers[mappings.barcode]).value : null,
-			brand_id: mappings.brand_id ? row.getCell(headers[mappings.brand_id]).value : null,
-			brand_name: mappings.brand_name ? row.getCell(headers[mappings.brand_name]).value : 'Others',
-			category_id: '7',
-			packaging: mappings.packaging ? row.getCell(headers[mappings.packaging]).value : null,
-			packaging_amount: mappings.packaging_amount
-				? row.getCell(headers[mappings.packaging_amount]).value
-				: null,
-			basic_harga_normal: mappings.basic_harga_normal
-				? row.getCell(headers[mappings.basic_harga_normal]).value
-				: null
-		};
-	};
+	get header() {
+		return Object.keys(this._headers);
+	}
 }

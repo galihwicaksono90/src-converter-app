@@ -1,96 +1,16 @@
 import type Exceljs from 'exceljs';
 
-export const templateTypes = [
-	'SID Retail PRO (Harga Toko)',
-	'SID Retail PRO (Harga Partai)'
-] as const;
-
-export type TemplateTypes = (typeof templateTypes)[number];
-
-export type Dictionary = Record<TemplateTypes, DictionaryMapProperties>;
+export type Dictionary = Record<string, DictionaryMapProperties>;
 
 export type DictionaryMapProperties = {
 	startRow: number;
 	sheetName: string;
 	mappings: DictionaryRow;
-	// mappings: MapArray;
-};
-
-export interface Row {
-	sku_id?: any;
-	name: any;
-	other_name?: any;
-	barcode?: any;
-	brand_id?: any;
-	brand_name: any;
-	category_id: any;
-	alias?: any;
-	availability?: any;
-	status?: any;
-	packaging?: any;
-	packaging_amount: any;
-	basic_harga_normal: any;
-	basic_harga_diskon?: any;
-	basic_tanggal_kadaluarsa?: any;
-	gold_harga_normal?: any;
-	gold_harga_diskon?: any;
-	gold_tanggal_kadaluarsa?: any;
-	src_harga_normal?: any;
-	src_harga_diskon?: any;
-	src_tanggal_kadaluarsa?: any;
-}
-
-// export interface DictionaryRow {
-// 	sku_id?: string;
-// 	name?: string;
-// 	other_name?: string;
-// 	barcode?: string;
-// 	brand_id?: string;
-// 	brand_name?: string;
-// 	category_id?: string;
-// 	alias?: string;
-// 	availability?: string;
-// 	status?: string;
-// 	packaging?: string;
-// 	packaging_amount?: string;
-// 	basic_harga_normal?: string;
-// 	basic_harga_diskon?: string;
-// 	basic_tanggal_kadaluarsa?: string;
-// 	gold_harga_normal?: string;
-// 	gold_harga_diskon?: string;
-// 	gold_tanggal_kadaluarsa?: string;
-// 	src_harga_normal?: string;
-// 	src_harga_diskon?: string;
-// 	src_tanggal_kadaluarsa?: string;
-// }
-
-export type DictionaryRow = {
-	sku_id?: string;
-	name?: string;
-	other_name?: string;
-	barcode?: string;
-	brand_id?: string;
-	brand_name?: string;
-	category_id?: string;
-	alias?: string;
-	availability?: string;
-	status?: string;
-	packaging?: string;
-	packaging_amount?: string;
-	basic_harga_normal?: string;
-	basic_harga_diskon?: string;
-	basic_tanggal_kadaluarsa?: string;
-	gold_harga_normal?: string;
-	gold_harga_diskon?: string;
-	gold_tanggal_kadaluarsa?: string;
-	src_harga_normal?: string;
-	src_harga_diskon?: string;
-	src_tanggal_kadaluarsa?: string;
 };
 
 export const dict: Dictionary = {
-	'SID Retail PRO (Harga Toko)': {
-		startRow: 2,
+	'Retail PRO': {
+		startRow: 1,
 		sheetName: 'Sheet1',
 		mappings: {
 			// sku_id: 1,
@@ -109,27 +29,83 @@ export const dict: Dictionary = {
 			// basic_harga_diskon: 17
 		} as const
 	},
-	'SID Retail PRO (Harga Partai)': {
-		startRow: 2,
+	Antero: {
+		startRow: 12,
 		sheetName: 'Sheet1',
 		mappings: {
 			// sku_id: 1,
-			name: 'NAMA',
+			name: 'Nm_Brg',
 			//other_name: '',
-			barcode: 'KODE_BARCODE',
-			brand_id: 'KODE_BARCODE_2',
+			barcode: 'Kd_Brg',
+			// brand_id: 'Kd_Brg',
 			//brand_name: 'f',
 			category_id: 'KATEGORI',
 			//alias: 'h',
 			//availability: 'i',
 			//status: 'j',
-			packaging: 'SATUAN_1',
-			packaging_amount: 'ISI',
-			basic_harga_normal: 'HARGA_PARTAI_1'
+			packaging: 'Unit',
+			// packaging_amount: 'ISI',
+			basic_harga_normal: 'Grossir'
 			// basic_harga_diskon: 17
+		} as const
+	},
+	'IPOS V1': {
+		startRow: 1,
+		sheetName: 'Sheet1',
+		mappings: {
+			// sku_id: 1,
+			name: 'Nama Item',
+			//other_name: '',
+			barcode: 'Kode Item',
+			// brand_id: 'Kd_Brg',
+			//brand_name: 'f',
+			category_id: 'Jenis',
+			//alias: 'h',
+			//availability: 'i',
+			//status: 'j',
+			packaging: 'Satuan',
+			// packaging_amount: 'ISI',
+			basic_harga_normal: 'Harga Pokok'
+			// basic_harga_diskon: 17
+		} as const
+	},
+	'IPOS V2': {
+		startRow: 1,
+		sheetName: 'Sheet',
+		mappings: {
+			name: 'Nama Item',
+			barcode: 'Kode Item',
+			category_id: 'Jenis',
+			packaging: 'Satuan',
+			basic_harga_normal: 'Harga Pokok'
+		} as const
+	},
+	'AR 2': {
+		startRow: 1,
+		sheetName: 'Sheet1',
+		mappings: {
+			name: 'Nama Produk',
+			barcode: 'Barcode 1',
+			category_id: 'Jenis',
+			packaging: 'Satuan',
+			basic_harga_normal: 'Harga Cabang'
+		} as const
+	},
+	'Modul Kasir': {
+		startRow: 1,
+		sheetName: 'Sheet1',
+		mappings: {
+			name: 'DISKRIPSI,C,38',
+			barcode: 'BARCODE,C,15',
+			packaging: 'SATUAN,C,8',
+			basic_harga_normal: 'HPP'
 		} as const
 	}
 };
+
+export const templateType = Object.keys(dict);
+
+export type TemplateType = (typeof templateType)[number];
 
 export const header: Row = {
 	sku_id: 'jika menambah baru sku id di kosongkan. Mohon untuk tidak mengubah data sku id',
@@ -235,3 +211,57 @@ export const excelColumns: Partial<Exceljs.Column>[] = [
 		width: 36
 	}
 ];
+
+export interface Row {
+	sku_id?: any;
+	name: any;
+	other_name?: any;
+	barcode?: any;
+	brand_id?: any;
+	brand_name: any;
+	category_id: any;
+	alias?: any;
+	availability?: any;
+	status?: any;
+	packaging?: any;
+	packaging_amount: any;
+	basic_harga_normal: any;
+	basic_harga_diskon?: any;
+	basic_tanggal_kadaluarsa?: any;
+	gold_harga_normal?: any;
+	gold_harga_diskon?: any;
+	gold_tanggal_kadaluarsa?: any;
+	src_harga_normal?: any;
+	src_harga_diskon?: any;
+	src_tanggal_kadaluarsa?: any;
+}
+
+export type DictionaryRow = {
+	sku_id?: string;
+	name?: string;
+	other_name?: string;
+	barcode?: string;
+	brand_id?: string;
+	brand_name?: string;
+	category_id?: string;
+	alias?: string;
+	availability?: string;
+	status?: string;
+	packaging?: string;
+	packaging_amount?: string;
+	basic_harga_normal?: string;
+	basic_harga_normal2?: string;
+	basic_harga_normal3?: string;
+	basic_harga_diskon?: string;
+	basic_tanggal_kadaluarsa?: string;
+	gold_harga_normal?: string;
+	gold_harga_diskon?: string;
+	gold_tanggal_kadaluarsa?: string;
+	src_harga_normal?: string;
+	src_harga_diskon?: string;
+	src_tanggal_kadaluarsa?: string;
+	packaging2?: string;
+	packaging_amount2?: string;
+	packaging3?: string;
+	packaging_amount3?: string;
+};

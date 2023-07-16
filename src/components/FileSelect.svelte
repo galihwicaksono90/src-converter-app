@@ -1,18 +1,47 @@
 <script lang="ts">
 	import Dropzone from 'svelte-file-dropzone/Dropzone.svelte';
-	export let file: File | null;
-	export let loading: boolean = false;
-	let inputRef: HTMLInputElement | null = null;
+	import { converter } from '../stores/converterStore.js';
+	import { Converter } from '$utils/converter.js';
+	import { form } from '$stores/formStore.js';
 
-	function handleDrop(e: any) {
+	let inputRef: HTMLInputElement | null = null;
+	export let file: File | null;
+
+	async function handleDrop(e: any) {
 		const { acceptedFiles, fileRejections } = e.detail;
 		if (fileRejections.length > 0) {
-			console.log({ fileRejections });
 			alert(`Tipe file ${fileRejections[0].file.type} tidak kompatibel`);
 			return;
 		}
-		if (acceptedFiles.length > 0) {
-			file = acceptedFiles[0];
+		if (acceptedFiles.length <= 0) {
+			return;
+		}
+		file = acceptedFiles[0];
+
+		if (!file) {
+			return;
+		}
+		await setConverter(file);
+	}
+
+	function clearFile(e: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement }) {
+		e.preventDefault();
+		e.stopPropagation();
+		file = null;
+		converter.setConverter(null);
+		form.resetForm();
+	}
+
+	async function setConverter(file: File) {
+		const c = new Converter();
+		converter.setLoading(true);
+		try {
+			await c.build(file);
+			converter.setConverter(c);
+		} catch (e) {
+			console.log(e);
+		} finally {
+			converter.setLoading(false);
 		}
 	}
 </script>
@@ -20,11 +49,11 @@
 <Dropzone
 	on:drop={handleDrop}
 	accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-	disabled={loading}
+	disabled={$converter.isLoading}
 	inputElement={inputRef}
 >
-	<div class="h-[200px] flex flex-col justify-center items-center">
-		{#if !!file}
+	<div class="h-[200px] flex flex-col justify-center items-center text-center">
+		{#if !!file && !!$converter.converter}
 			<div class="h-20 w-20">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -56,11 +85,7 @@
 			</p>
 			<button
 				class="hover:bg-gray-200 text-gray-500 py-1 px-2 rounded disabled:bg-gray-500 text-sm"
-				on:click={(e) => {
-					e.preventDefault();
-					e.stopPropagation();
-					file = null;
-				}}>Hapus</button
+				on:click={clearFile}>Hapus</button
 			>
 		{:else}
 			<svg
