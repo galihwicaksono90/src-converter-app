@@ -28,8 +28,6 @@
 		e.preventDefault();
 		e.stopPropagation();
 		file = null;
-		converter.setConverter(null);
-		form.resetForm();
 	}
 
 	async function setConverter(file: File) {
@@ -42,6 +40,13 @@
 			console.log(e);
 		} finally {
 			converter.setLoading(false);
+		}
+	}
+
+	$: {
+		if (!file) {
+			converter.setConverter(null);
+			form.resetForm();
 		}
 	}
 </script>

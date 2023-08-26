@@ -44,8 +44,7 @@ export class Converter {
 	_convertRows = (
 		startRow: number,
 		databank: Record<string, DataBank>,
-		mappings: DictionaryRow,
-		templateType: TemplateType
+		mappings: DictionaryRow
 	) => {
 		if (!this._targetWb || !this._sourceWs) {
 			return;
@@ -92,32 +91,56 @@ export class Converter {
 
 				targetWs.addRow(data);
 
-				if (templateType === 'Retail PRO') {
-					if (
-						mappings.packaging2 &&
-						mappings.basic_harga_normal2 &&
-						mappings.packaging2 !== '' &&
-						mappings.basic_harga_normal2 !== ''
-					) {
-						const packaging2 = row.getCell(headers[mappings.packaging2]).value;
-						let harga2 = row.getCell(headers[mappings.basic_harga_normal2]).value;
+				if (
+					mappings.packaging2 &&
+					mappings.basic_harga_normal2 &&
+					mappings.packaging2 !== '' &&
+					mappings.basic_harga_normal2 !== ''
+				) {
+					const packaging2 = row.getCell(headers[mappings.packaging2]).value;
+					let harga2 = row.getCell(headers[mappings.basic_harga_normal2]).value;
 
-						if (!packaging2 || !harga2) {
-							return;
-						}
-
-						if (typeof harga2 === 'string') {
-							harga2 = parseInt(harga2);
-						}
-
-						if ((harga2 as number) < 0) {
-							return;
-						}
-
-						data.packaging = packaging2;
-						data.basic_harga_normal = harga2;
-						targetWs.addRow(data);
+					if (!packaging2 || !harga2) {
+						return;
 					}
+
+					if (typeof harga2 === 'string') {
+						harga2 = parseInt(harga2);
+					}
+
+					if ((harga2 as number) < 0) {
+						return;
+					}
+
+					data.packaging = packaging2;
+					data.basic_harga_normal = harga2;
+					targetWs.addRow(data);
+				}
+
+				if (
+					mappings.packaging3 &&
+					mappings.basic_harga_normal3 &&
+					mappings.packaging3 !== '' &&
+					mappings.basic_harga_normal3 !== ''
+				) {
+					const packaging3 = row.getCell(headers[mappings.packaging3]).value;
+					let harga3 = row.getCell(headers[mappings.basic_harga_normal3]).value;
+
+					if (!packaging3 || !harga3) {
+						return;
+					}
+
+					if (typeof harga3 === 'string') {
+						harga3 = parseInt(harga3);
+					}
+
+					if ((harga3 as number) < 0) {
+						return;
+					}
+
+					data.packaging = packaging3;
+					data.basic_harga_normal = harga3;
+					targetWs.addRow(data);
 				}
 			}
 		});
@@ -293,7 +316,6 @@ export class Converter {
 	};
 
 	_mapRow = (row: Exceljs.Row, mappings: DictionaryRow, headers: Record<string, number>): Row => {
-		console.log(row.getCell(headers[mappings.basic_harga_normal!]).value ?? 'hello');
 		return {
 			sku_id: mappings.sku_id ? row.getCell(headers[mappings.sku_id]).value : null,
 			name: mappings.name ? row.getCell(headers[mappings.name]).value : null,

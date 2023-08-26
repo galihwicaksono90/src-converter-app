@@ -45,20 +45,13 @@
 
 <section class="py-12 px-4 space-y-8">
 	<h1 class="text-3xl font-black text-center">SRC Template Converter</h1>
-	<div class="flex container mx-auto gap-8 max-w-[1000px]">
-		<div class="flex flex-col justify-center gap-8 basis-2/4">
-			<Select
-				options={[...templateType]}
-				bind:value={$converter.templateType}
-				label="Nama template"
-				name="templateType"
-			/>
-
+	<div class="grid grid-cols-2 gap-8">
+		<div class="space-y-8">
 			<FileSelect bind:file />
 			<button
 				on:click={processFile}
 				disabled={$converter.isLoading || $converter.converter === null}
-				class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-500"
+				class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-500 w-full"
 			>
 				{$converter.isLoading ? 'Loading file...' : 'Convert'}
 			</button>

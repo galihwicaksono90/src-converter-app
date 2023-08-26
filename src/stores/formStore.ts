@@ -56,7 +56,10 @@ export const createStore = () => {
 	};
 
 	const resetForm = () => {
-		update(() => initialForm);
+		update((i) => ({
+			...i,
+			...initialForm
+		}));
 	};
 
 	return {

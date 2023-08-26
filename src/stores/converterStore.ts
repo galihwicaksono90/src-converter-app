@@ -16,7 +16,7 @@ export function createStore() {
 		converter: null,
 		templateType: 'Retail PRO',
 		mapping: null,
-		startRow: 2
+		startRow: 1
 	});
 
 	const setLoading = (value: boolean) => {
